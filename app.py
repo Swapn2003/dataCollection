@@ -47,8 +47,9 @@ def upload_to_drive(file_name, new_df):
         request = service.files().get_media(fileId=file_id)
         fh = io.BytesIO(request.execute())
         existing_df = pd.read_excel(fh)
-        combined_df = pd.concat([existing_df, new_df], ignore_index=True)
-        combined_df.to_excel(file_name, index=False)
+        # combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+        # combined_df.to_excel(file_name, index=False)
+        new_df.to_excel(file_name, index=False)
         service.files().delete(fileId=file_id).execute()
     else:
         new_df.to_excel(file_name, index=False)
