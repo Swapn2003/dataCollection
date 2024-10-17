@@ -147,8 +147,8 @@ def extract_data():
         current_time = datetime.now(pytz.timezone('Asia/Kolkata'))
 
         # Process each URL
-        for region, url in urls.items():
-            response = requests.get(url, headers=headers)
+        for region, Url in urls.items():
+            response = requests.get(Url, headers=headers)
             
             if response.status_code == 200:
                 data = response.json()
