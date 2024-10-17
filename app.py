@@ -105,9 +105,37 @@ def extract_data():
 
             # file_name = "generation_data.xlsx"
             upload_to_drive(file_name, df)
-            return jsonify({"message": "Data successfully uploaded to Google Drive"}), 200
+            # return jsonify({"message": "Data successfully uploaded to Google Drive"}), 200
+
+
+            
         else:
             return jsonify({"error": "Failed to fetch data"}), response.status_code
+        
+                # Fetch and save nr_demand data
+
+
+        url_demand = "https://eal.iitk.ac.in/regional_data/nr/nr_data.php?action=demand_graph"
+        response_demand = requests.get(url_demand, headers=headers)
+        if response_demand.status_code == 200:
+            data_demand = response_demand.json()
+            records_demand = [
+                {
+                    "start_time": item['block'],
+                    "end_time": pd.to_datetime(item['block']) + pd.Timedelta(minutes=15),
+                    "nr_demand": item.get('nr_demand_today', 'N/A')
+                }
+                for item in data_demand
+            ]
+            df_demand = pd.DataFrame(records_demand)
+            file_name_demand = f"nr_demand_data_{current_time.strftime('%Y-%m-%d')}.xlsx"
+            upload_to_drive(file_name_demand, df_demand)
+        else:
+            return jsonify({"error": "Failed to fetch data"}), response.status_code
+        
+        
+        return jsonify({"message": "Both data files successfully uploaded to Google Drive"}), 200
+
     except Exception as e:
         # print("hello")
         return jsonify({"error": str(e)}), 500
