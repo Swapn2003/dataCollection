@@ -115,24 +115,59 @@ def extract_data():
                 # Fetch and save nr_demand data
 
 
-        url_demand = "https://eal.iitk.ac.in/regional_data/nr/nr_data.php?action=demand_graph"
-        response_demand = requests.get(url_demand, headers=headers)
-        if response_demand.status_code == 200:
-            data_demand = response_demand.json()
-            records_demand = [
-                {
-                    "start_time": item['block'],
-                    "end_time": pd.to_datetime(item['block']) + pd.Timedelta(minutes=15),
-                    "nr_demand": item.get('nr_demand_today', 'N/A')
-                }
-                for item in data_demand
-            ]
-            df_demand = pd.DataFrame(records_demand)
-            file_name_demand = f"nr_demand_data_{current_time.strftime('%Y-%m-%d')}.xlsx"
-            upload_to_drive(file_name_demand, df_demand)
-        else:
-            return jsonify({"error": "Failed to fetch data"}), response.status_code
+        # url_demand = "https://eal.iitk.ac.in/regional_data/nr/nr_data.php?action=demand_graph"
+        # response_demand = requests.get(url_demand, headers=headers)
+        # if response_demand.status_code == 200:
+        #     data_demand = response_demand.json()
+        #     records_demand = [
+        #         {
+        #             "start_time": item['block'],
+        #             "end_time": pd.to_datetime(item['block']) + pd.Timedelta(minutes=15),
+        #             "nr_demand": item.get('nr_demand_today', 'N/A')
+        #         }
+        #         for item in data_demand
+        #     ]
+        #     df_demand = pd.DataFrame(records_demand)
+        #     file_name_demand = f"nr_demand_data_{current_time.strftime('%Y-%m-%d')}.xlsx"
+        #     upload_to_drive(file_name_demand, df_demand)
+        # else:
+        #     return jsonify({"error": "Failed to fetch data"}), response.status_code
+
         
+        # List of URLs and corresponding file name suffixes
+        urls = {
+            "nr": "https://eal.iitk.ac.in/regional_data/nr/nr_data.php?action=demand_graph",
+            "wr": "https://eal.iitk.ac.in/regional_data/wr/wr_data.php?action=demand_graph",
+            "sr": "https://eal.iitk.ac.in/regional_data/sr/sr_data.php?action=demand_graph",
+            "er": "https://eal.iitk.ac.in/regional_data/er/er_data.php?action=demand_graph",
+            "ner": "https://eal.iitk.ac.in/regional_data/ner/ner_data.php?action=demand_graph"
+        }
+
+        # Current time for the file name
+        current_time = datetime.now(pytz.timezone('Asia/Kolkata'))
+
+        # Process each URL
+        for region, url in urls.items():
+            response = requests.get(url, headers=headers)
+            
+            if response.status_code == 200:
+                data = response.json()
+                records = [
+                    {
+                        "start_time": item['block'],
+                        "end_time": pd.to_datetime(item['block']) + pd.Timedelta(minutes=15),
+                        f"{region}_demand": item.get(f'{region}_demand_today', 'N/A')
+                    }
+                    for item in data
+                ]
+                
+                df = pd.DataFrame(records)
+                file_name = f"{region}_demand_data_{current_time.strftime('%Y-%m-%d')}.xlsx"
+                upload_to_drive(file_name, df)
+            
+            else:
+                print(f"Failed to fetch data for {region}. Status Code: {response.status_code}")
+                
         
         return jsonify({"message": "Both data files successfully uploaded to Google Drive"}), 200
 
