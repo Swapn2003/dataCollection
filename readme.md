@@ -13,7 +13,6 @@ This project automates the collection and processing of energy data from a speci
     - [Steps to Fill the .env File](#steps-to-fill-the-env-file)
     - [How to Find the Values](#how-to-find-the-values)
 3. [Additional Notes](#additional-notes)
-4. [License](#license)
 
 ---
 
@@ -146,8 +145,6 @@ This project is done under EE677 Course.
 4. **Filling the .env File**: Explains how to extract credentials from the `credentials.json` file to fill in the `.env` file for accessing Google APIs securely.
 
 5. **Additional Notes**: Describes how the process is automated and how the user will be notified via email for successful runs.
-
-6. **License**: Specifies the license under which the code is shared (MIT in this case).
 
 ### Important Notes:
 - Ensure to replace any example URLs or placeholders (`YOUR_CLIENT_ID`, `YOUR_PROJECT_ID`, etc.) with the actual values in your setup.
